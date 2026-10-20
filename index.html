@@ -76,6 +76,30 @@ dt{font-weight:900;color:var(--pink);white-space:nowrap}dd{margin:0;line-height:
 .ri .rt{font-size:11px;font-weight:900;color:var(--pink)}
 details.more{margin-top:14px}details.more summary{cursor:pointer;font-weight:700;font-size:14px}
 
+/* ---- 餐廳搜尋：表單 / 進度 ---- */
+.grp{margin:12px 2px 6px;font-weight:900;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:6px}
+.sum{display:flex;flex-wrap:wrap;gap:8px;margin:10px 2px 2px}
+.sum span{background:var(--mint);border:2px solid var(--mint);border-radius:999px;padding:3px 10px;font-weight:900;font-size:12.5px}
+.sum span.g{background:var(--butter);border-color:var(--butter)}
+.sum span.p{background:var(--lav);border-color:var(--lav)}
+.bar2{height:7px;border-radius:999px;background:var(--pink2);overflow:hidden;margin:10px 2px 0}
+.bar2 i{display:block;height:100%;width:0;background:var(--pink);transition:width .35s}
+.bar2[hidden]{display:none}
+.ri.hit{border-color:var(--pink)}
+.ri .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.ri em.hitb{background:var(--mint);border:2px solid var(--mint);color:#2C6B51}
+.ri em.db{background:var(--butter)}
+.ri em.tb{background:var(--lav)}
+.ri em.oh{background:var(--bg);border:2px solid var(--line)}
+
+/* ---- 分步重選 ---- */
+.rsm{display:grid;gap:8px}
+.rst{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;color:inherit;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:10px 12px;cursor:pointer;box-shadow:0 3px 0 var(--line);transition:transform .12s,box-shadow .12s}
+.rst:active{transform:translateY(3px);box-shadow:none}
+.rst .step{width:26px;height:26px;flex:none;border-radius:50%;background:var(--pink2);display:grid;place-items:center;font-weight:900;font-size:13px}
+.rst .rn2{font-weight:900;font-size:14.5px;flex:1;min-width:0}
+.rst .rv2{color:var(--sub);font-size:12.5px;flex:none;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ---- 即時地圖 ---- */
 .lmap{height:300px;border:3px solid var(--line);border-radius:20px;overflow:hidden;background:var(--mint);margin-top:14px;position:relative}
 .lmap svg{display:block;width:100%;height:auto}
@@ -131,7 +155,17 @@ const DATA=[
 ];
 const PRICE={0:'價位未提供',1:'$ 平價',2:'$$ 中等'};
 const CHEER=['好眼光！','我也喜歡這個～','耶！幫你記下來了','哇，好期待喔','選得好可愛！','這個超棒的'];
-const FOOD_KW=[['火鍋','hotpot','shabu','鍋物'],['日本','日式','壽司','寿司','拉麵','拉面','丼','sushi','ramen','japanese','izakaya','居酒屋'],['義大利','義式','披薩','pizza','pasta','italian','義大利麵'],['牛排','steak','grill','燒肉','烤肉','bbq'],['炸雞','chicken','korean','韓式','韓國','fried'],['夜市','小吃','攤','street','snack','fast_food','market','麵','飯'],['甜點','蛋糕','咖啡','cafe','dessert','bakery','pastry','tea','下午茶'],[]];
+// 每一題「想吃什麼」對應的搜尋關鍵字（中文＋英文＋OSM cuisine 標籤值）
+const FOOD_KW=[
+ ['火鍋','火锅','hotpot','shabu','涮','鍋物','麻辣','鴛鴦','薑母鴨','羊肉爐','石頭鍋','小火鍋','一人鍋','麻辣鍋'],
+ ['日本','日式','壽司','寿司','sushi','拉麵','拉面','ramen','丼','丼飯','居酒屋','izakaya','japanese','和食','懷石','燒鳥','串燒','天婦羅','生魚片','烏龍麵','蕎麥','日菜','日本料理','donburi','teishoku','kaiseki'],
+ ['義大利','意大利','義式','意式','披薩','比薩','pizza','pasta','italian','義大利麵','意大利麵','義麵','焗烤','燉飯','risotto','trattoria','spaghetti'],
+ ['牛排','steak','steak_house','grill','排餐','燒肉','烤肉','bbq','barbecue','鐵板','炙燒','戰斧','肋眼','菲力','沙朗','sizzler','yakiniku'],
+ ['炸雞','chicken','fried_chicken','korean','韓式','韩式','韓國','韩国','치킨','雞排','唐揚','kfc','bb.q','nene','橋村','兩班家','beer'],
+ ['夜市','小吃','攤','street','snack','fast_food','market','night','food_court','麵','面','飯','饭','滷味','鹽酥雞','臭豆腐','蚵仔煎','關東煮','便當','自助餐','熱炒','炒飯','羹','餃','包子','早餐','brunch','diner','noodle'],
+ ['甜點','甜点','蛋糕','咖啡','cafe','coffee','coffee_shop','dessert','bakery','pastry','tea','下午茶','冰淇淋','冰品','鬆餅','可麗露','甜品','waffle','cake','ice_cream'],
+ []
+];
 const DEF={lat:25.08850,lng:121.52435,z:15};
 const $=s=>document.querySelector(s),pick=a=>a[Math.random()*a.length|0];
 const S={i:0,date:'',area:'',rest:'',restAddr:'',preview:false,a:{}};
@@ -145,7 +179,7 @@ const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const ok=()=>{const s=STEPS[S.i];return S.a[s.k].length>0||(s.date&&S.date)||(s.rest&&S.rest.trim())};
 
 /* ================= 餐廳資料：即時地圖 + 備用清單 ================= */
-let LIVE=null,MY=null,MK=[],LF=null,MAP=null,BUSY=false,TILE=null,TKEY='amap',REF=null,REFNAME='';
+let LIVE=null,MY=null,MK=[],LF=null,MAP=null,BUSY=false,TILE=null,TKEY='amap',REF=null,REFNAME='',HITN=0,SEQ=0;
 const TILES={
  amap:{name:'高德地圖',url:'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',attr:'© 高德地圖',max:18,sub:'1234'},
  osm:{name:'OpenStreetMap',url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',attr:'© OpenStreetMap 貢獻者',max:19,sub:'abc'}
@@ -190,57 +224,183 @@ function loadLeaflet(){
     document.head.appendChild(s);
   });
 }
+/* 多個 Overpass 鏡像「同時」送出，誰先回就用誰 —— 比一個一個試快很多 */
+const OVR=[
+ 'https://overpass-api.de/api/interpreter',
+ 'https://overpass.kumi.systems/api/interpreter',
+ 'https://overpass.osm.jp/api/interpreter',
+ 'https://overpass.private.coffee/api/interpreter',
+ 'https://overpass.osm.ch/api/interpreter'
+];
+const OVR_T=28000;
+function raceFetch(body,ms){
+  return new Promise(res=>{
+    const cts=OVR.map(()=>new AbortController());
+    let fin=false,bad=0;
+    const done=v=>{if(fin)return;fin=true;cts.forEach(c=>{try{c.abort()}catch(_){}});res(v)};
+    OVR.forEach((u,i)=>{
+      fetch(u,{method:'POST',body,signal:cts[i].signal})
+        .then(r=>r.ok?r.json():Promise.reject(new Error('bad')))
+        .then(j=>{if(j&&Array.isArray(j.elements)&&j.elements.length)done(j.elements);else if(++bad===OVR.length)done(null)})
+        .catch(()=>{if(++bad===OVR.length)done(null)});
+    });
+    setTimeout(()=>done(null),ms);            // 最壞情況的硬底線
+  });
+}
 async function overpass(lat,lng,r){
-  const body=`[out:json][timeout:20];node["amenity"~"^(restaurant|cafe|fast_food)$"](around:${r},${lat},${lng});out body 80;`;
-  const api=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.osm.jp/api/interpreter'];
-  for(const u of api){
-    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),12000);
-    try{
-      const res=await fetch(u,{method:'POST',body,signal:ctl.signal});
-      clearTimeout(tm);if(!res.ok)continue;const j=await res.json();
-      if(j&&Array.isArray(j.elements))return j.elements;
-    }catch(_){}finally{clearTimeout(tm)}
-  }
-  return null;
+  // nwr = 點＋路＋建築都算（很多餐廳在 OSM 是畫成「面」的，只查 node 會漏掉一大半）
+  const body=`[out:json][timeout:25];nwr["amenity"~"^(restaurant|cafe|fast_food)$"](around:${r},${lat},${lng});out center tags 150;`;
+  return raceFetch(body,OVR_T);
 }
 function toItem(e){
-  const t=e.tags||{},name=(t.name||t['name:zh']||'').trim();
+  const t=e.tags||{};
+  const name=(t.name||t['name:zh']||t['name:en']||'').trim();
   if(!name)return null;
+  const lat=e.lat!=null?e.lat:(e.center&&e.center.lat),lng=e.lon!=null?e.lon:(e.center&&e.center.lon);
+  if(lat==null||lng==null)return null;
   const st=t['addr:street']||t['addr:full']||'',no=t['addr:housenumber']||'';
-  const addr=[st,no].filter(Boolean).join('')||'（地址未提供）';
-  const cui=[t.cuisine,t.amenity].filter(Boolean).join('・');
-  const oh=t.opening_hours?('🕒 '+t.opening_hours.slice(0,28)):'';
-  return{name,lat:e.lat,lng:e.lon,addr,meta:oh||(cui?'🍽 '+cui:'🍽 餐飲店家'),price:'',src:'OpenStreetMap 即時資料'};
+  const addr=[st,no].filter(Boolean).join('')||t['addr:city']||t['addr:district']||'（地址未提供）';
+  const cui=t.cuisine?String(t.cuisine).split(/[;,]/)[0].replace(/_/g,' ').trim():'';
+  const am={restaurant:'餐廳',cafe:'咖啡廳',fast_food:'速食小吃'}[t.amenity]||'餐飲';
+  const type=cui?cui+'・'+am:am;
+  const oh=t.opening_hours?String(t.opening_hours).slice(0,26):'';
+  return{name,lat,lng,addr,type,oh,hit:false,d:0,
+    meta:oh?'🕒 '+oh:'🍽 '+type,
+    hay:[name,cui,t.amenity,t['cuisine:zh'],t.description,t['name:en'],addr].filter(Boolean).join(' ').toLowerCase(),
+    src:'OpenStreetMap 即時資料'};
 }
-function kwList(){const j=S.a.food[0];return(j==null||j==null)?[]:(FOOD_KW[j]||[])}
+function kwName(){const f=STEPS.find(x=>x.k==='food'),j=S.a.food[0];if(j==null)return'餐廳';const n=f.o[j][1];return(n==='你來決定')?'餐廳':n}
+function kwList(){const j=S.a.food[0];return(j==null)?[]:(FOOD_KW[j]||[])}
 function matchKW(it,kws){
-  if(!kws.length)return true;
-  const s=(it.name+' '+(it.meta||'')+' '+(it.addr||'')).toLowerCase();
-  return kws.some(k=>s.includes(String(k).toLowerCase()));
+  if(!kws.length)return true;                 // 「你來決定」＝不篩
+  return kws.some(k=>it.hay.includes(String(k).toLowerCase()));
 }
 function setCap(t){const c=$('#mcap');if(c)c.innerHTML=t}
-async function liveSearch(lat,lng,label){
-  if(BUSY)return;BUSY=true;
-  REF={lat,lng};REFNAME=label||'';
-  setCap('🔄 正在找'+(label?'「'+esc(label)+'」':'這一區')+'附近的餐廳…');
-  let els=null,r=1200;
-  for(const rad of [1200,2500,5000]){          // 太少就自動擴大範圍，失敗就不再重試
-    r=rad;els=await overpass(lat,lng,rad);
-    if(!els||els.length>=6)break;
+function setBar(p){const b=$('#pbar');if(!b)return;if(p==null){b.hidden=true;return}b.hidden=false;const i=b.querySelector('i');if(i)i.style.width=Math.max(3,Math.min(100,p*100))+'%'}
+
+/* ---- 資料源 1（最準，但要 Key）：高德地圖 Web 服務「周邊搜尋」，用 JSONP 所以沒有跨域問題 ---- */
+let AMAP_ERR='';
+function jsonp(url,cb,ms){
+  return new Promise(res=>{
+    const s=document.createElement('script');let done=false;
+    const t=setTimeout(()=>fin(null),ms||9000);
+    function fin(v){if(done)return;done=true;clearTimeout(t);try{delete window[cb]}catch(_){}try{s.remove()}catch(_){}res(v)}
+    window[cb]=d=>fin(d);
+    s.onerror=()=>fin(null);
+    s.src=url;document.head.appendChild(s);
+  });
+}
+async function amap(lat,lng,kn){
+  const key=(localStorage.getItem('amapKey')||'').trim();if(!key)return null;
+  const cb='__amap'+(Date.now()%1e7),g=wgs2gcj(lat,lng);
+  const u='https://restapi.amap.com/v3/place/around?key='+encodeURIComponent(key)
+    +'&location='+g[1].toFixed(6)+','+g[0].toFixed(6)
+    +'&keywords='+encodeURIComponent(kn==='餐廳'?'美食':kn)
+    +'&types=050000&radius=3000&offset=30&page=1&extensions=all&output=JSON&callback='+cb;
+  const d=await jsonp(u,cb,9000);
+  if(!d){AMAP_ERR='連不上高德';return null}
+  if(d.status!=='1'||!Array.isArray(d.pois)){AMAP_ERR=d.info||'回應格式錯誤';return null}
+  AMAP_ERR='';
+  const out=[];
+  d.pois.forEach(p=>{
+    const ll=String(p.location||'').split(',');if(ll.length<2||!p.name)return;
+    const w=gcj2wgs(+ll[1],+ll[0]);                 // 高德給的是火星坐標，轉回 WGS84 存
+    out.push({name:p.name,lat:w[0],lng:w[1],addr:p.address||'（地址未提供）',
+      type:String(p.type||'').split(';').pop()||'餐飲',oh:'',hit:false,d:0,
+      meta:'',hay:(p.name+' '+p.type).toLowerCase(),src:'高德地圖'});
+  });
+  return out;
+}
+
+/* 備援資料源：Photon（komoot，同樣吃 OpenStreetMap，但比 Overpass 輕、在中國大陸通常連得上） */
+async function photon(lat,lng,terms){
+  const out=[];
+  for(const q of terms.slice(0,3)){
+    try{
+      const u='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&lat='+lat+'&lon='+lng+'&limit=40&osm_tag=amenity';
+      const r=await fetch(u,{signal:AbortSignal.timeout?AbortSignal.timeout(12000):undefined});
+      const j=await r.json();
+      (j.features||[]).forEach(f=>{
+        const p=f.properties||{},c=(f.geometry&&f.geometry.coordinates)||[];
+        if(!p.name||c.length<2)return;
+        const v=p.osm_value||'';
+        if(!/^(restaurant|cafe|fast_food|bar|pub|food_court)$/.test(v))return;
+        const d=hav(lat,lng,c[1],c[0]);
+        if(d>6000)return;
+        const am={restaurant:'餐廳',cafe:'咖啡廳',fast_food:'速食小吃',bar:'餐酒館',pub:'餐酒館',food_court:'美食街'}[v]||'餐飲';
+        const addr=[p.district||p.city,p.street,p.housenumber].filter(Boolean).join('')||[p.city,p.state].filter(Boolean).join('')||'（地址未提供）';
+        out.push({name:p.name,lat:c[1],lng:c[0],addr,type:am,oh:'',hit:false,d,
+          meta:'🍽 '+am,hay:(p.name+' '+v).toLowerCase(),src:'Photon / OpenStreetMap'});
+      });
+    }catch(_){}
   }
-  BUSY=false;
-  if(!els){LIVE=null;draw(rlist());setCap('⚠️ 抓不到即時資料（網路或 Overpass 忙碌）。請按「📡 重新定位」或在下面輸入地區再試。');return}
-  const kws=kwList();
-  let arr=els.map(toItem).filter(Boolean);
-  const seen=new Set();arr=arr.filter(x=>{const k=x.name+'|'+x.lat.toFixed(4);if(seen.has(k))return false;seen.add(k);return true});
-  let hit=arr.filter(x=>matchKW(x,kws));
-  if(hit.length<3)hit=arr;
-  hit.sort((a,b)=>hav(lat,lng,a.lat,a.lng)-hav(lat,lng,b.lat,b.lng));
-  hit=hit.slice(0,12);
-  if(!hit.length){LIVE=null;draw(rlist());setCap('⚠️ 這附近沒找到餐廳，把地圖拖到別處再按「🔄 搜尋這一區」。');return}
-  LIVE=hit;draw(LIVE);
-  const near=fmtD(hav(lat,lng,hit[hit.length-1].lat,hit[hit.length-1].lng));
-  setCap('✅ 找到 <b>'+hit.length+'</b> 家'+(label?'「'+esc(label)+'」':'')+'附近的店家，最遠約 '+near+'，已由近到遠排序。資料：OpenStreetMap。');
+  const seen=new Set();
+  return out.filter(x=>{const k=x.name+'|'+x.lat.toFixed(4);if(seen.has(k))return false;seen.add(k);return true});
+}
+
+async function liveSearch(lat,lng,label){
+  const tk=++SEQ;                             // 新的搜尋會作廢舊的
+  BUSY=true;LIVE=null;HITN=0;
+  REF={lat,lng};REFNAME=label||'';
+  const kws=kwList(),kn=kwName(),t0=Date.now();
+  const radii=[900,1800,3200,6000];
+  let all=[],hits=[],src='Overpass / OpenStreetMap';
+  /* 第一優先：有填高德 Key 就用高德，中國大陸也穩 */
+  if((localStorage.getItem('amapKey')||'').trim()){
+    setCap(`🔄 用高德地圖找附近的「<b>${esc(kn)}</b>」…`);
+    const am=await amap(lat,lng,kn);
+    if(tk!==SEQ){BUSY=false;return}
+    if(am&&am.length){all=am;hits=all.filter(x=>matchKW(x,kws));src='高德地圖'}
+    else if(AMAP_ERR)toast('高德：'+AMAP_ERR+'，改用 OpenStreetMap');
+  }
+  for(let ri=0;ri<radii.length&&(!all.length||!hits.length);ri++){
+    const rad=radii[ri];
+    setBar(ri/radii.length);
+    setCap(`🔄 第 <b>${ri+1}/${radii.length}</b> 輪：找 ${(rad/1000).toFixed(1)} km 內的「<b>${esc(kn)}</b>」…（${((Date.now()-t0)/1000).toFixed(0)}s）`);
+    const els=await overpass(lat,lng,rad);
+    if(tk!==SEQ){BUSY=false;return}           // 被更新的搜尋取代
+    if(els){
+      const seen=new Set();
+      all=els.map(toItem).filter(Boolean).filter(x=>{const k=x.name+'|'+x.lat.toFixed(4);if(seen.has(k))return false;seen.add(k);return true});
+      hits=all.filter(x=>matchKW(x,kws));
+    }
+    if(hits.length>=10)break;                 // 夠多了就停
+    if(ri===radii.length-1)break;
+    if(hits.length>=5&&all.length>=60)break;  // 密度夠高也停
+  }
+  if(tk!==SEQ){BUSY=false;return}
+  if(!all.length||!hits.length){               // 主要來源不給力 → 換 Photon 再找一次
+    setCap(`🔄 主要資料庫沒回應，換一個來源再試…（${((Date.now()-t0)/1000).toFixed(0)}s）`);
+    const ph=await photon(lat,lng,[kn].concat(kws.filter(k=>!/[\u4e00-\u9fa5]/.test(k)).slice(0,2),['restaurant']));
+    if(tk!==SEQ){BUSY=false;return}
+    if(ph.length){
+      const seen=new Set(all.map(x=>x.name+'|'+x.lat.toFixed(4)));
+      all=all.concat(ph.filter(x=>!seen.has(x.name+'|'+x.lat.toFixed(4))));
+      hits=all.filter(x=>matchKW(x,kws));src='Photon / OpenStreetMap';
+    }
+  }
+  BUSY=false;setBar(1);
+  if(tk!==SEQ)return;
+  if(!all.length){
+    LIVE=null;HITN=0;draw(rlist());setBar(null);
+    setCap('⚠️ 這一區沒抓到餐廳（網路或資料庫忙碌）。請按「📡 重新定位」一次，或在下面輸入地區按 🔎 去這裡。');return;
+  }
+  all.forEach(x=>{x.d=x.d||hav(lat,lng,x.lat,x.lng)});
+  all.sort((a,b)=>a.d-b.d);
+  hits=all.filter(x=>matchKW(x,kws));
+  let list=hits.slice(0,14);
+  const left=[];
+  if(list.length<6){                          // 符合的太少，補其他餐廳墊在後面
+    const inList=new Set(list);
+    for(const x of all){if(!inList.has(x)&&left.length<12-list.length)left.push(x)}
+  }
+  const out=list.concat(left);
+  out.forEach((x,i)=>{x.hit=i<list.length});
+  HITN=list.length;LIVE=out;draw(LIVE);setBar(null);
+  const far=fmtD(out[out.length-1].d),sec=((Date.now()-t0)/1000).toFixed(1);
+  if(list.length)setCap(`✅ 花了 <b>${sec}</b> 秒，<b>${far}</b> 內找到 <b>${out.length}</b> 家，其中 <b>${list.length}</b> 家符合「<b>${esc(kn)}</b>」，由近到遠排序。資料來源：${src}。`);
+  else setCap(`✅ 附近 <b>${far}</b> 內共 ${out.length} 家餐廳，但沒有完全符合「${esc(kn)}」的，下面列出最接近的選擇。資料來源：${src}。`);
+  say(list.length?`找到 ${list.length} 家「${kn}」囉～`:'這區沒那麼剛好的店，先看看附近有什麼吧');
 }
 /* --- 定位：GPS → IP → 預設 --- */
 function ipGeo(){
@@ -285,16 +445,35 @@ function mapSvg(L){
 }
 
 /* ---------- 清單 / 圖釘 繪製 ---------- */
-function rbHtml(L){
+function rbHtml(L,off){
   return L.map((r,k)=>{
-    const d=distOf(r);
+    const i=off+k,d=r.d||distOf(r);
     const fromMe=!!(REF&&MY&&Math.abs(REF.lat-MY.lat)<1e-7&&Math.abs(REF.lng-MY.lng)<1e-7);
-    const tag=d!=null?`<em>${fromMe?'距你':'距離'} ${fmtD(d)}</em>`:(r.price?`<em>${r.price}</em>`:'');
-    return `<button class="ri" data-j="${k}"><b class="no">${k+1}</b><span class="rn">${esc(r.name)}</span><span class="rm">${esc(r.meta)}${tag}</span><small>📍 ${esc(r.addr)}</small></button>`;
+    const tags=[];
+    if(d!=null)tags.push(`<em class="db">${fromMe?'距你':'距離'} ${fmtD(d)}</em>`);
+    if(r.type)tags.push(`<em class="tb">🍽 ${esc(r.type)}</em>`);
+    if(r.hit)tags.push(`<em class="hitb">✓ 符合</em>`);
+    if(r.price)tags.push(`<em class="db">${esc(r.price)}</em>`);
+    else if(r.meta)tags.push(`<em>${esc(r.meta)}</em>`);
+    if(r.oh)tags.push(`<em class="oh">🕒 ${esc(r.oh)}</em>`);
+    return `<button class="ri${r.hit?' hit':''}" data-j="${i}"><b class="no">${i+1}</b><span class="rn">${esc(r.name)}</span><span class="tags">${tags.join('')}</span><small>📍 ${esc(r.addr)}</small></button>`;
   }).join('');
 }
 function draw(L){
-  const box=$('#rlbox');if(box)box.innerHTML=rbHtml(L);
+  const box=$('#rlbox');
+  if(box){
+    const live=!!(LIVE&&LIVE.length),n=live?Math.min(HITN,L.length):0;
+    const a=L.slice(0,n),b=L.slice(n);
+    let h='';
+    if(a.length)h+=`<p class="grp">✅ 符合「${esc(kwName())}」— ${a.length} 家，由近到遠</p><div class="rl">${rbHtml(a,0)}</div>`;
+    if(b.length)h+=`<p class="grp" style="margin-top:16px">${a.length?'🍽 附近其他餐廳':'📋 餐廳清單'} — ${b.length} 家</p><div class="rl">${rbHtml(b,a.length)}</div>`;
+    box.innerHTML=h||'<p class="cap">還沒找到店家，按上面的按鈕再試一次。</p>';
+  }
+  const s=$('#sum');
+  if(s){
+    const n=Math.min(HITN,L.length),live=!!(LIVE&&LIVE.length);
+    s.innerHTML=live?`<span class="g">🔍 ${esc(kwName())}</span><span>✅ 符合 ${n} 家</span><span class="p">🍽 共 ${L.length} 家</span>`+(MY?'<span class="p">📍 以你的位置為準</span>':''):'';
+  }
   if(MAP&&LF)drawPins(L);
   paintRest();
 }
@@ -352,6 +531,7 @@ function setTile(k){
 async function mountMap(){
   const box=$('#lmap');if(!box||box.dataset.on==='1')return;
   const base=rlist();
+  if(MAP){try{MAP.remove()}catch(_){}}MAP=null;MK=[];TILE=null;   // 重進這一步時清掉舊地圖
   try{
     LF=await loadLeaflet();
     if(box.dataset.on==='1')return;
@@ -377,18 +557,23 @@ function restUI(){
     <div class="lmap" id="lmap">${mapSvg(L)}</div>
     <div class="mapbar">
       <button class="btn sm" id="mypos">📡 重新定位</button>
-      <button class="btn sm" id="resrc">🔄 搜尋這一區</button>
+      <button class="btn sm" id="resrc">🔄 重新搜尋</button>
       <button class="btn sm" id="fitb">🗺 全部顯示</button>
       <button class="btn sm" id="tileb">🗺 圖磚：高德地圖</button>
     </div>
+    <div class="bar2" id="pbar" hidden><i></i></div>
     <p class="cap" id="mcap">📍 正在定位你的位置…</p>
-    <div class="rl" id="rlbox">${rbHtml(L)}</div>
+    <div class="sum" id="sum"></div>
+    <div class="rl" id="rlbox">${rbHtml(L,0)}</div>
     <p class="cap" id="sel"></p>
     <details class="more"><summary>找不到喜歡的？換個地方搜尋</summary>
       <label>🗺️ 想在哪一區找？<input id="ar" maxlength="30" placeholder="例如：台北 信義區、西湖邊" value="${esc(S.area)}"></label>
       <div class="tools" style="justify-content:flex-start"><button class="btn sm" id="go">🔎 去這裡</button></div>
       <div class="links" id="lk">${linkHtml()}</div>
       <label>🏷️ 自己填店名<input id="rs" maxlength="40" placeholder="貼上或輸入餐廳名稱" value="${esc(S.rest)}"></label>
+      <label>🔑 高德 Web 服務 Key（選填，填了中國大陸抓店更快更準）
+        <input id="ak" maxlength="40" placeholder="貼上高德 Key，會存在這台手機裡" value="${esc(localStorage.getItem('amapKey')||'')}"></label>
+      <p class="cap">到 <a href="https://console.amap.com/dev/key/app" target="_blank" rel="noopener noreferrer" style="color:var(--pink)">高德開放平臺</a> 免費註冊 → 新增 Key → 服務平台選「<b>Web服務</b>」→ 貼到上面。沒填也沒關係，會自動用 OpenStreetMap。</p>
     </details></div>`;
 }
 
@@ -407,7 +592,7 @@ function render(){
   $('#next').textContent=S.i===STEPS.length-1?'看結果':'下一步';
   $('#prev').style.visibility=S.i?'visible':'hidden';
   grid();say(s.say);
-  if(s.rest){LIVE=null;const b=$('#lmap');if(b)b.dataset.on='';paintRest();mountMap()}
+  if(s.rest){LIVE=null;HITN=0;const b=$('#lmap');if(b)b.dataset.on='';paintRest();mountMap()}
   const p=$('#panel');p.classList.remove('in');void p.offsetWidth;p.classList.add('in');
 }
 
@@ -418,6 +603,7 @@ document.addEventListener('click',e=>{
   else if(a.includes(j))a.splice(a.indexOf(j),1);
   else{if(a.length>=s.max){a.shift();toast(`最多 ${s.max} 個，幫你換掉最早選的`)}a.push(j)}
   grid();fx(e.clientX,e.clientY,['💗','✨','🌸','💕']);
+  if(s.k==='food'){S.rest='';S.restAddr='';LIVE=null;HITN=0}   // 換了想吃什麼，重抓餐廳
   if(S.a[s.k].includes(j))say(pick(CHEER)+'「'+s.o[j][1]+'」');
 });
 document.addEventListener('click',e=>{
@@ -431,7 +617,8 @@ document.addEventListener('click',e=>{
     locateFlow(true);
   }else if(id==='resrc'){
     if(!MAP)return toast('地圖還沒好，等一下下');
-    const c=MAP.getCenter(),w=toWGS(c.lat,c.lng);liveSearch(w[0],w[1],'地圖中心');
+    if(MY)liveSearch(MY.lat,MY.lng,'我附近');
+    else{const c=MAP.getCenter(),w=toWGS(c.lat,c.lng);liveSearch(w[0],w[1],'地圖中心')}
   }else if(id==='fitb'){fit()}
   else if(id==='tileb'){setTile(TKEY==='amap'?'osm':'amap');toast(TKEY==='amap'?'已切到高德圖磚':'已切到 OpenStreetMap')}
   else if(id==='go'){
@@ -450,6 +637,7 @@ document.addEventListener('change',e=>{if(e.target.id==='dt'){S.date=e.target.va
 document.addEventListener('input',e=>{
   if(e.target.id==='rs'){S.rest=e.target.value;S.restAddr='';$('#next').disabled=!ok();paintRest()}
   else if(e.target.id==='ar'){S.area=e.target.value;$('#lk').innerHTML=linkHtml()}
+  else if(e.target.id==='ak'){localStorage.setItem('amapKey',e.target.value.trim());if(e.target.value.trim())toast('Key 已存好，按「🔄 重新搜尋」試試')}
 });
 $('#next').onclick=e=>{fx(e.clientX,e.clientY,['💖','🎀']);S.i<STEPS.length-1?(S.i++,render()):review()};
 $('#prev').onclick=()=>{S.i--;render()};
@@ -488,7 +676,27 @@ function waiting(){
   $('#pv').onclick=()=>{S.preview=true;render()};
 }
 function home(){OWNER&&!PLAN?waiting():render()}
-function reset(){STEPS.forEach(s=>S.a[s.k]=[]);S.i=0;S.date=S.area=S.rest=S.restAddr='';S.preview=false;PLAN=null;LIVE=null;home()}
+function reset(){STEPS.forEach(s=>S.a[s.k]=[]);S.i=0;S.date=S.area=S.rest=S.restAddr='';S.preview=false;PLAN=null;LIVE=null;HITN=0;home()}
+function ansText(s){
+  const v=S.a[s.k].map(j=>s.o[j][0]+s.o[j][1]).join('、');
+  if(s.rest)return v?('🙋 '+v):(S.rest||'');
+  if(s.date&&S.date)return v?v+' ・ '+S.date:S.date;
+  return v;
+}
+/* 分步重選：不用全部重來，點哪一步就跳去那一步 */
+function resetMenu(){
+  view='reset';hearts();
+  $('#q').textContent='🔄 想從哪一步開始改？';
+  $('#hint').textContent='點一下就直接跳到那一步，其他答案都幫你留著';
+  $('#grid').className='rsm';$('#nav').hidden=true;$('#extra').innerHTML='';
+  $('#grid').innerHTML='<div class="rl">'+STEPS.map((s,i)=>{
+    const v=ansText(s);
+    return `<button class="rst" data-j="${i}"><span class="step">${i+1}</span><span class="rn2">${s.ico} ${esc(s.q)}</span><span class="rv2">${v?esc(v):'還沒選'}</span></button>`;
+  }).join('')+'</div><div class="tools"><button class="btn" id="allclear">🧹 全部重來</button></div>';
+  say('只改想改的那一步就好，不必全部重來～');
+  $('#grid').querySelectorAll('.rst').forEach(b=>b.onclick=()=>{S.i=+b.dataset.j;render()});
+  $('#allclear').onclick=()=>{const pv=S.preview;reset();S.preview=pv;pv?render():0};
+}
 
 function review(){
   view='review';hearts();
@@ -505,7 +713,7 @@ function review(){
     if(n>=4)no.textContent='好啦好啦，我去 💦';
   };
   no.addEventListener('pointerenter',dodge);no.addEventListener('pointerdown',dodge);
-  $('#again').onclick=()=>{const pv=S.preview;reset();S.preview=pv;pv?render():0};
+  $('#again').onclick=()=>{const pv=S.preview;PLAN=null;S.preview=pv;resetMenu()};
 }
 const draft=()=>({a:S.a,date:S.date,rest:S.rest.trim(),addr:S.restAddr,at:Date.now(),ack:false,ackAt:0});
 async function submit(e){
@@ -530,7 +738,7 @@ function showResult(mode){
   $('#again').onclick=async()=>{
     if(mode==='preview'){S.preview=false;return home()}
     if(live&&DB){try{await DB.doc('plan/main').delete()}catch(_){return toast('重選失敗，再試一次')}}
-    reset();
+    PLAN=null;resetMenu();
   };
 }
 function route(had){
